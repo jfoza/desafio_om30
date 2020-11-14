@@ -11,7 +11,7 @@
 		/*}*/
 	</style>
     
-	<?php echo (isset($titulo) ? '<title>Loja virtual | ' .$titulo .'</title>' : '<title>Loja virtual</title>') ?>
+	<?php echo (isset($titulo) ? '<title>Cadastro de pacientes | ' .$titulo .'</title>' : '<title>Cadastro de pacientes</title>') ?>
 
 	<!-- General CSS Files -->
 	<link rel="stylesheet" href="<?php echo base_url('public/assets/css/app.min.css'); ?>">
