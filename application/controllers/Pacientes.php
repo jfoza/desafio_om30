@@ -10,19 +10,11 @@ class Pacientes extends CI_Controller {
 
 	public function index() {
 		$data = array(
-			'styles' => array(
-				'bundles/datatables/datatables.min.css',
-				'bundles/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css',
-			),
-
 			'scripts' => array(
-				'bundles/datatables/datatables.min.js',
-				'bundles/datatables/DataTables-1.10.16/js/dataTables.bootstrap4.min.js',
-				'bundles/jquery-ui/jquery-ui.min.js',
-				'mask/jquery.mask.min.js',
-				'mask/custom.js',
-				'js/page/datatables.js',
-				'js/pacientes.js',
+				'js/pacientes/pacientes.js',
+				'js/pacientes/components.js',
+				'js/pagination.js',
+				'js/mask/mask.min.js',
 			),
 		);
 
@@ -32,7 +24,18 @@ class Pacientes extends CI_Controller {
 	}
 
 	public function list() {
-		$data['pacientes'] = $this->core_model->get_all('pacientes');
+		if( ! $this->input->is_ajax_request()) {
+			exit('Ação não permitida');
+		}
+
+		$data['pacientes'] = $this->core_model->get_all('pacientes_cadastro');
+
+		if( ! $data['pacientes']) {
+			$data['erro'] = true;
+			$data['mensagem'] = 'Não foi possível exibir os dados';
+		} else {
+			$data['erro'] = false;
+		}
 
 		echo json_encode($data);
 	}
@@ -74,9 +77,8 @@ class Pacientes extends CI_Controller {
 
 			$data = html_escape($data);
 
-			if ($this->core_model->insert('pacientes', $data, true)) {
+			if ($this->core_model->insert('pacientes_cadastro', $data, true)) {
 				$retorno['erro'] = false;
-				$retorno['mensagem'] = 'Usuário adicionado com sucesso';
 			}
 
 		} else {
@@ -209,69 +211,7 @@ class Pacientes extends CI_Controller {
 		}
 	}
 
-	public function valida_cns() {
+	public function valida_cns() {}
 
-	}
-
-	/*
-	public function delete($usuario_id = null) {
-		if(!$usuario_id || !$this->ion_auth->user($usuario_id)->row()) {
-			$this->session->set_flashdata('error', 'Usuário não encontrado.');
-			redirect('restrita/usuarios');
-		}
-		if($this->ion_auth->is_admin($usuario_id)) {
-			$this->session->set_flashdata('error', 'Este usuário não pode ser excluído.');
-			redirect('restrita/usuarios');
-		}
-
-		if($this->ion_auth->delete_user($usuario_id)) {
-			$this->session->set_flashdata('success', 'Usuário excluído com sucesso.');
-		} else {
-			$this->session->set_flashdata('error', 'Erro ao excluir usuário.');
-		}
-			redirect('restrita/usuarios');
-	}
-
-	public function email_check($email) {
-		$usuario_id = $this->input->post('usuario_id');
-		if(!$usuario_id) {
-			//CADASTRAR
-			if ($this->core_model->get_by_id('users', array('email' => $email))) {
-				$this->form_validation->set_message('email_check', 'Email inválido.');
-				return false;
-			} else {
-				return true;
-			}
-		} else {
-			//EDITAR
-			if ($this->core_model->get_by_id('users', array('email' => $email, 'id !=' => $usuario_id))) {
-				$this->form_validation->set_message('email_check', 'Email inválido.');
-				return false;
-			} else {
-				return true;
-			}
-		}
-	}
-
-	public function username_check($username) {
-		$usuario_id = $this->input->post('usuario_id');
-		if(!$usuario_id) {
-			//CADASTRAR
-			if ($this->core_model->get_by_id('users', array('username' => $username))) {
-				$this->form_validation->set_message('username_check', 'Nome de usuário inválido.');
-				return false;
-			} else {
-				return true;
-			}
-		} else {
-			//EDITAR
-			if ($this->core_model->get_by_id('users', array('username' => $username, 'username !=' => $username))) {
-				$this->form_validation->set_message('username_check', 'Nome de usuário inválido.');
-				return false;
-			} else {
-				return true;
-			}
-		}
-	}
-	*/
+	public function delete() {}
 }

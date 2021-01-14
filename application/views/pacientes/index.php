@@ -2,83 +2,81 @@
 
 <?php $this->load->view('layout/sidebar'); ?>
 
-<div id="app">
+<div id="app" class="main-content">
+	<?php $this->load->view('pacientes/alerts/sucesso'); ?>
 
-	<!-- Main Content -->
-	<div class="main-content">
-		<section class="section">
-
-<!--			<div v-show="alertMsg" class="alert alert-warning alert-dismissible fade show" role="alert">-->
-<!--				{{ successMSG }}-->
-<!--				<button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
-<!--					<span aria-hidden="true">&times;</span>-->
-<!--				</button>-->
-<!--			</div>-->
-
-			<div class="section-body">
-				<div class="row">
-					<div class="col-12">
-						<div class="card">
-							<div class="card-header d-block">
-								<h4></h4>
-								<button type="button" @click="addModal = true" class="btn btn-primary float-right" data-toggle="modal" data-target="#modalCore">
-									<i class="fas fa-user"></i>&nbsp;&nbsp;Novo
-								</button>
-
-							</div>
-							<div class="card-body">
-
-								<div class="table-responsive">
-									<table class="table table-striped data-table">
-										<thead>
-										<tr>
-											<th class="text-center">#</th>
-											<th>Nome completo</th>
-											<th>Nome da mãe</th>
-											<th>Data de nascimento</th>
-											<th>CPF</th>
-											<th>CNS</th>
-											<th>Endereço</th>
-											<th>Ações</th>
-										</tr>
-										</thead>
-
-										<tbody>
-										<tr v-for="paciente in pacientes_total">
-											<td></td>
-											<td>{{ paciente.paciente_nome_completo }}</td>
-											<td>{{ paciente.paciente_nome_completo_mae }}</td>
-											<td>{{ paciente.paciente_data_nascimento }}</td>
-											<td>{{ paciente.paciente_cpf }}</td>
-											<td>{{ paciente.paciente_cns }}</td>
-											<td>{{ paciente.paciente_endereco }}</td>
-											<td>
-												<a style="float:left;" href="" title="Editar" class="btn-icon"
-												   data-toggle="modal" data-target="#modalCore">
-													<i class="fas fa-user-edit"></i>
-												</a>
-												<a style="float:left;" @click="deleteModal = true" href="" title="Excluir" class="btn-icon"
-												   data-toggle="modal" data-target="#deleteModal">
-													<i class="fas fa-trash-alt"></i>
-												</a>
-
-												<a style="float:left;" href="" title="Mostrar" class="btn-icon"
-												   data-toggle="modal" data-target="">
-													<i class="fas fa-eye"></i>
-												</a>
-											</td>
-										</tr>
-										</tbody>
-									</table>
-								</div>
-							</div>
-						</div>
-					</div>
+	<section v-if="listPacientes == true" class="section">
+		<!-- LISTA TODOS OS PACIENTES -->
+		<List>
+			<div class="card-header d-block">
+				<div class="float-left">
+					<h4>{{ titulo }}</h4>
 				</div>
 			</div>
-		</section>
-		<?php $this->load->view('layout/sidebar_settings'); ?>
-	</div>
+			<div class="card-body">
+				<div class="row" style="margin-bottom: 15px;">
+					<div class="col-sm-12 col-md-3">
+						<label>Pesquisar pacientes</label>
+						<input v-model="pesquisaPacientes" type="text" class="form-control"/>
+					</div>
+					<div class="col-sm-12 col-md-3"></div>
+					<div class="col-sm-12 col-md-3"></div>
+					<div class="col-sm-12 col-md-3">
+						<button @click="openModalNew" type="button" class="btn btn-primary form-control" style="margin-top: 28px">
+							<i class="fas fa-user"></i>&nbsp;Novo paciente
+						</button>
+					</div>
+				</div>
+				<div class="table-responsive">
+					<table class="table table-striped data-table">
+						<thead>
+							<tr>
+								<th class="text-left">Id</th>
+								<th class="text-right">Nome completo</th>
+								<th class="text-right">Nome da mãe</th>
+								<th class="text-center">Data de nascimento</th>
+								<th class="text-center">CPF</th>
+								<th class="text-center">CNS</th>
+								<th class="text-center">Endereço</th>
+								<th class="text-center">Ações</th>
+							</tr>
+						</thead>
 
-	<?php $this->load->view('pacientes/modal/modal'); ?>
+						<tbody>
+							<tr v-for="paciente in resultBusca">
+								<td class="text-left">{{ paciente.paciente_id }}</td>
+								<td class="text-right">{{ paciente.paciente_nome_completo }}</td>
+								<td class="text-right">{{ paciente.paciente_nome_completo_mae }}</td>
+								<td class="text-center">{{ paciente.paciente_data_nascimento }}</td>
+								<td class="text-center">{{ paciente.paciente_cpf }}</td>
+								<td class="text-center">{{ paciente.paciente_cns }}</td>
+								<td class="text-center">{{ paciente.paciente_endereco }}</td>
+								<td class="text-center">
+									<button @click="openModalEdit" type="button" class="btn btn-primary" title="Editar">
+										<i class="fas fa-user-edit"></i>
+									</button>
+									<button @click="deleteUser" type="button" class="btn btn-danger" title="Excluir">
+										<i class="fas fa-trash-alt"></i>
+									</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</List>
+
+		<div v-if="pagination">
+			<Pagination
+					:current_page="currentPage"
+					:row_count_page="rowCountPage"
+					@page-update="pageUpdate"
+					:total_data="totalData"
+					:page_range="pageRange"
+			>
+			</Pagination>
+		</div>
+	</section>
+
+	<?php $this->load->view('pacientes/core'); ?>
 </div>
