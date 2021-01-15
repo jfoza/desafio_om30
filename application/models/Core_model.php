@@ -3,11 +3,14 @@ defined('BASEPATH') OR exit('Ação não permitida');
 
 class Core_model extends CI_Model {
 
-	public function get_all($table = null, $condition = null) {
+	public function get_all($table = null, $condition = null, $orderby = null) {
 		if($table && $this->db->table_exists($table)) {
 			if(is_array($condition)) {
 				$this->db->where($condition);
 			}
+
+			$this->db->order_by($orderby);
+
 			return $this->db->get($table)->result();
 		}
 		else {

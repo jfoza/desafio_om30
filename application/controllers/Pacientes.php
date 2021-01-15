@@ -28,7 +28,7 @@ class Pacientes extends CI_Controller {
 			exit('Ação não permitida');
 		}
 
-		$data['pacientes'] = $this->core_model->get_all('pacientes_cadastro');
+		$data['pacientes'] = $this->core_model->get_all('pacientes_cadastro', null, 'paciente_id DESC');
 
 		if( ! $data['pacientes']) {
 			$data['erro'] = true;
@@ -41,7 +41,12 @@ class Pacientes extends CI_Controller {
 	}
 
 	public function insert() {
-		$this->form_validation->set_rules('paciente_nome_completo', 'Nome', 'trim|required|min_length[2]|max_length[200]');
+		if( ! $this->input->is_ajax_request()) {
+			exit('Ação não permitida');
+		}
+
+		$this->form_validation->set_rules('paciente_nome', 'Nome', 'trim|required|min_length[2]|max_length[100]');
+		$this->form_validation->set_rules('paciente_sobrenome', 'Sobrenome', 'trim|required|min_length[2]|max_length[100]');
 		$this->form_validation->set_rules('paciente_nome_completo_mae', 'Sobrenome', 'trim|required|min_length[2]|max_length[200]');
 		$this->form_validation->set_rules('paciente_data_nascimento', 'Data de nascimento', 'trim|required');
 		$this->form_validation->set_rules('paciente_cpf', 'CPF', 'trim|required|exact_length[14]|callback_valida_cpf');
@@ -60,6 +65,8 @@ class Pacientes extends CI_Controller {
 			//Sucesso
 			$data = elements(
 				array(
+					'paciente_nome',
+					'paciente_sobrenome',
 					'paciente_nome_completo',
 					'paciente_nome_completo_mae',
 					'paciente_data_nascimento',
@@ -77,15 +84,18 @@ class Pacientes extends CI_Controller {
 
 			$data = html_escape($data);
 
-			if ($this->core_model->insert('pacientes_cadastro', $data, true)) {
-				$retorno['erro'] = false;
-			}
+			$this->core_model->insert('pacientes_cadastro', $data, true);
+
+			$retorno['erro'] = false;
+
+			echo json_encode($retorno);
 
 		} else {
 			//Erro de validação
 			$retorno['erro'] = true;
 			$retorno['mensagem'] = array(
-				'paciente_nome_completo' => form_error('paciente_nome_completo'),
+				'paciente_nome' => form_error('paciente_nome'),
+				'paciente_sobrenome' => form_error('paciente_sobrenome'),
 				'paciente_nome_completo_mae' => form_error('paciente_nome_completo_mae'),
 				'paciente_data_nascimento' => form_error('paciente_data_nascimento'),
 				'paciente_cpf' => form_error('paciente_cpf'),
@@ -98,75 +108,147 @@ class Pacientes extends CI_Controller {
 				'paciente_cidade' => form_error('paciente_cidade'),
 				'paciente_uf' => form_error('paciente_uf'),
 			);
+
+			echo json_encode($retorno);
 		}
+	}
+
+	public function update() {
+		if( ! $this->input->is_ajax_request()) {
+			exit('Ação não permitida');
+		}
+
+		$this->form_validation->set_rules('paciente_nome', 'Nome', 'trim|required|min_length[2]|max_length[100]');
+		$this->form_validation->set_rules('paciente_sobrenome', 'Sobrenome', 'trim|required|min_length[2]|max_length[100]');
+		$this->form_validation->set_rules('paciente_nome_completo_mae', 'Sobrenome', 'trim|required|min_length[2]|max_length[200]');
+		$this->form_validation->set_rules('paciente_data_nascimento', 'Data de nascimento', 'trim|required');
+		$this->form_validation->set_rules('paciente_cpf', 'CPF', 'trim|required|exact_length[14]|callback_valida_cpf');
+		$this->form_validation->set_rules('paciente_cns', 'CNS', 'trim|required|exact_length[8]');
+		$this->form_validation->set_rules('paciente_cep', 'CEP', 'trim|required|exact_length[9]');
+		$this->form_validation->set_rules('paciente_endereco', 'Endereço', 'trim|required|min_length[4]|max_length[200]');
+		$this->form_validation->set_rules('paciente_numero_endereco', 'Nº', 'trim|required|max_length[15]');
+		$this->form_validation->set_rules('paciente_complemento', 'Complemento', 'trim|max_length[130]');
+		$this->form_validation->set_rules('paciente_bairro', 'Bairro', 'trim|required|min_length[2]|max_length[50]');
+		$this->form_validation->set_rules('paciente_cidade', 'Cidade', 'trim|required|min_length[2]|max_length[100]');
+		$this->form_validation->set_rules('paciente_uf', 'UF', 'trim|required|exact_length[2]');
+
+		$retorno = array();
+
+		if($this->form_validation->run()) {
+			//Sucesso
+			$data = elements(
+				array(
+					'paciente_nome',
+					'paciente_sobrenome',
+					'paciente_nome_completo',
+					'paciente_nome_completo_mae',
+					'paciente_data_nascimento',
+					'paciente_cpf',
+					'paciente_cns',
+					'paciente_cep',
+					'paciente_endereco',
+					'paciente_numero_endereco',
+					'paciente_complemento',
+					'paciente_bairro',
+					'paciente_cidade',
+					'paciente_uf',
+				), $this->input->post()
+			);
+
+			$data = html_escape($data);
+
+			$paciente_id = (int) $this->input->post('paciente_id', true);
+
+			if( ! $paciente_id) {
+				$retorno['erro'] = true;
+				$retorno['mensagem_erro'] = 'Registro não localizado.';
+
+				echo json_encode($retorno);
+			}
+
+			$this->core_model->update('pacientes_cadastro', $data,  array('paciente_id' => $paciente_id));
+
+			$retorno['erro'] = false;
+
+			echo json_encode($retorno);
+
+		} else {
+			//Erro de validação
+			$retorno['erro'] = true;
+			$retorno['mensagem'] = array(
+				'paciente_nome' => form_error('paciente_nome'),
+				'paciente_sobrenome' => form_error('paciente_sobrenome'),
+				'paciente_nome_completo_mae' => form_error('paciente_nome_completo_mae'),
+				'paciente_data_nascimento' => form_error('paciente_data_nascimento'),
+				'paciente_cpf' => form_error('paciente_cpf'),
+				'paciente_cns' => form_error('paciente_cns'),
+				'paciente_cep' => form_error('paciente_cep'),
+				'paciente_endereco' => form_error('paciente_endereco'),
+				'paciente_numero_endereco' => form_error('paciente_numero_endereco'),
+				'paciente_complemento' => form_error('paciente_complemento'),
+				'paciente_bairro' => form_error('paciente_bairro'),
+				'paciente_cidade' => form_error('paciente_cidade'),
+				'paciente_uf' => form_error('paciente_uf'),
+			);
+
+			echo json_encode($retorno);
+		}
+	}
+
+	public function delete() {
+		if( ! $this->input->is_ajax_request()) {
+			exit('Ação não permitida');
+		}
+
+		$paciente_id = (int) $this->input->post('paciente_id', true);
+
+		if( ! $paciente_id) {
+			$retorno['erro'] = true;
+			$retorno['mensagem_erro'] = 'Registro não localizado.';
+
+			echo json_encode($retorno);
+		}
+
+		if( ! $this->core_model->get_by_id('pacientes_cadastro', array('paciente_id' => $paciente_id))) {
+			$retorno['erro'] = true;
+			$retorno['mensagem_erro'] = 'Registro não localizado.';
+
+			echo json_encode($retorno);
+		}
+
+		$this->core_model->delete('pacientes_cadastro', array('paciente_id' => $paciente_id));
+
+		$retorno['erro'] = false;
 
 		echo json_encode($retorno);
 	}
 
-	public function update() {
-		die(var_dump($this->input->post()));
-		$this->form_validation->set_rules('paciente_nome_completo', 'Nome', 'trim|required|min_length[2]|max_length[200]');
-		$this->form_validation->set_rules('paciente_nome_completo_mae', 'Sobrenome', 'trim|required|min_length[2]|max_length[200]');
-		$this->form_validation->set_rules('paciente_data_nascimento', 'Data de nascimento', 'trim|required');
-		$this->form_validation->set_rules('paciente_cpf', 'CPF', 'trim|required|exact_length[14]|callback_valida_cpf');
-		$this->form_validation->set_rules('paciente_cns', 'CNS', 'trim|required|exact_length[8]');
-		$this->form_validation->set_rules('paciente_cep', 'CEP', 'trim|required|exact_length[9]');
-		$this->form_validation->set_rules('paciente_endereco', 'Endereço', 'trim|required|min_length[4]|max_length[200]');
-		$this->form_validation->set_rules('paciente_numero_endereco', 'Nº', 'trim|required|max_length[15]');
-		$this->form_validation->set_rules('paciente_complemento', 'Complemento', 'trim|max_length[130]');
-		$this->form_validation->set_rules('paciente_bairro', 'Bairro', 'trim|required|min_length[2]|max_length[50]');
-		$this->form_validation->set_rules('paciente_cidade', 'Cidade', 'trim|required|min_length[2]|max_length[100]');
-		$this->form_validation->set_rules('paciente_uf', 'UF', 'trim|required|exact_length[2]');
-
-		$retorno = array();
-
-		if($this->form_validation->run()) {
-			//Sucesso
-			$id = $this->input->post('', true);
-			$data = elements(
-				array(
-					'paciente_nome_completo',
-					'paciente_nome_completo_mae',
-					'paciente_data_nascimento',
-					'paciente_cpf',
-					'paciente_cns',
-					'paciente_cep',
-					'paciente_endereco',
-					'paciente_numero_endereco',
-					'paciente_complemento',
-					'paciente_bairro',
-					'paciente_cidade',
-					'paciente_uf',
-				), $this->input->post()
-			);
-
-			$data = html_escape($data);
-
-			if ($this->core_model->insert('pacientes', $data, true)) {
-				$retorno['erro'] = false;
-				$retorno['mensagem'] = 'Usuário adicionado com sucesso';
-			}
-
-		} else {
-			//Erro de validação
-			$retorno['erro'] = true;
-			$retorno['mensagem'] = array(
-				'paciente_nome_completo' => form_error('paciente_nome_completo'),
-				'paciente_nome_completo_mae' => form_error('paciente_nome_completo_mae'),
-				'paciente_data_nascimento' => form_error('paciente_data_nascimento'),
-				'paciente_cpf' => form_error('paciente_cpf'),
-				'paciente_cns' => form_error('paciente_cns'),
-				'paciente_cep' => form_error('paciente_cep'),
-				'paciente_endereco' => form_error('paciente_endereco'),
-				'paciente_numero_endereco' => form_error('paciente_numero_endereco'),
-				'paciente_complemento' => form_error('paciente_complemento'),
-				'paciente_bairro' => form_error('paciente_bairro'),
-				'paciente_cidade' => form_error('paciente_cidade'),
-				'paciente_uf' => form_error('paciente_uf'),
-			);
+	public function get_paciente_id() {
+		if( ! $this->input->is_ajax_request()) {
+			exit('Ação não permitida');
 		}
 
-		echo json_encode($retorno);
+		$paciente_id = (int) $this->input->get('paciente_id', true);
+		$retorno = [];
+
+		if( ! $paciente_id) {
+			$retorno['erro'] = true;
+			$retorno['mensagem'] = 'Não foi possível localizar o paciente';
+
+			echo json_encode($retorno);
+		} else {
+			$retorno['dados_paciente'] = $this->core_model->get_by_id('pacientes_cadastro', array('paciente_id' => $paciente_id));
+
+			if( ! $retorno['dados_paciente']) {
+				$retorno['dados_paciente'] = '';
+				$retorno['erro'] = true;
+				$retorno['mensagem'] = 'Não foi possível exibir os dados';
+			} else {
+				$retorno['erro'] = false;
+			}
+
+			echo json_encode($retorno);
+		}
 	}
 
 	public function valida_cpf($cpf) {
@@ -176,14 +258,14 @@ class Pacientes extends CI_Controller {
 
 			$paciente_id = $this->input->post('paciente_id');
 
-			if ($this->core_model->get_by_id('pacientes', array('paciente_id !=' => $paciente_id, 'paciente_cpf' => $cpf))) {
+			if ($this->core_model->get_by_id('pacientes_cadastro', array('paciente_id !=' => $paciente_id, 'paciente_cpf' => $cpf))) {
 				$this->form_validation->set_message('valida_cpf', 'O campo {field} já existe, ele deve ser único');
 				return FALSE;
 			}
 		} else {
 			//CADASTRAR
 
-			if ($this->core_model->get_by_id('pacientes', array('paciente_cpf' => $cpf))) {
+			if ($this->core_model->get_by_id('pacientes_cadastro', array('paciente_cpf' => $cpf))) {
 				$this->form_validation->set_message('valida_cpf', 'O campo {field} já existe, ele deve ser único');
 				return FALSE;
 			}
@@ -212,6 +294,4 @@ class Pacientes extends CI_Controller {
 	}
 
 	public function valida_cns() {}
-
-	public function delete() {}
 }

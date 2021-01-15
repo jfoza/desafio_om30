@@ -33,11 +33,9 @@
 							<tr>
 								<th class="text-left">Id</th>
 								<th class="text-right">Nome completo</th>
-								<th class="text-right">Nome da mãe</th>
 								<th class="text-center">Data de nascimento</th>
 								<th class="text-center">CPF</th>
 								<th class="text-center">CNS</th>
-								<th class="text-center">Endereço</th>
 								<th class="text-center">Ações</th>
 							</tr>
 						</thead>
@@ -46,22 +44,24 @@
 							<tr v-for="paciente in resultBusca">
 								<td class="text-left">{{ paciente.paciente_id }}</td>
 								<td class="text-right">{{ paciente.paciente_nome_completo }}</td>
-								<td class="text-right">{{ paciente.paciente_nome_completo_mae }}</td>
 								<td class="text-center">{{ paciente.paciente_data_nascimento }}</td>
 								<td class="text-center">{{ paciente.paciente_cpf }}</td>
 								<td class="text-center">{{ paciente.paciente_cns }}</td>
-								<td class="text-center">{{ paciente.paciente_endereco }}</td>
 								<td class="text-center">
-									<button @click="openModalEdit" type="button" class="btn btn-primary" title="Editar">
+									<button @click="getPacienteId(paciente.paciente_id)" type="button" class="btn btn-primary" title="Editar">
 										<i class="fas fa-user-edit"></i>
 									</button>
-									<button @click="deleteUser" type="button" class="btn btn-danger" title="Excluir">
+									<button @click="openModalDelete(paciente.paciente_id)" type="button" class="btn btn-danger" title="Excluir">
 										<i class="fas fa-trash-alt"></i>
 									</button>
 								</td>
 							</tr>
 						</tbody>
 					</table>
+
+					<div class="text-center" v-if="pacientes.length == 0">
+						<span>Nenhum registro encontrado</span>
+					</div>
 				</div>
 			</div>
 		</List>
@@ -79,4 +79,5 @@
 	</section>
 
 	<?php $this->load->view('pacientes/core'); ?>
+	<?php $this->load->view('pacientes/modal/modal'); ?>
 </div>

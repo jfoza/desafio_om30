@@ -5,21 +5,31 @@
 			<div class="float-left">
 				<h4>{{ titulo }}</h4>
 			</div>
-			<button @click="clearAll" type="button" class="btn btn-primary float-right">
-				<i class="fas fa-undo-alt"></i>&nbsp;Voltar
+			<button @click="clearAll" type="button" class="btn btn-light float-right">
+				X
 			</button>
 		</div>
 		<div class="card-body">
 			<div class="form-row">
 				<!--Nome-->
 				<div class="form-group col-md-4">
-					<label>Nome Completo</label>
+					<label>Nome</label>
 					<input type="text"
-						   v-model="newPaciente.paciente_nome_completo"
+						   v-model="newPaciente.paciente_nome"
 						   class="form-control"
 						   autocomplete="off"
 					/>
-					<div class="form-text text-danger" v-html="formValidate.paciente_nome_completo"></div>
+					<div class="form-text text-danger" v-html="formValidate.paciente_nome"></div>
+				</div>
+
+				<div class="form-group col-md-4">
+					<label>Sobrenome</label>
+					<input type="text"
+						   v-model="newPaciente.paciente_sobrenome"
+						   class="form-control"
+						   autocomplete="off"
+					/>
+					<div class="form-text text-danger" v-html="formValidate.paciente_sobrenome"></div>
 				</div>
 
 				<!--Nome da Mãe-->
@@ -152,20 +162,33 @@
 			<div class="float-left">
 				<h4>{{ titulo }}</h4>
 			</div>
-			<button @click="clearAll" type="button" class="btn btn-primary float-right">
-				<i class="fas fa-undo-alt"></i>&nbsp;Voltar
+			<button @click="clearAll" type="button" class="btn btn-light float-right">
+				X
 			</button>
 		</div>
 		<div class="card-body">
 			<div class="form-row">
 				<!--Nome-->
 				<div class="form-group col-md-4">
-					<label>Nome Completo</label>
+					<label>Nome</label>
 					<input type="text"
-						   v-model="choosePaciente.paciente_nome_completo"
+						   v-model="choosePaciente.paciente_nome"
 						   class="form-control"
 						   autocomplete="off"
 					/>
+
+					<div class="text-danger" v-html="formValidate.paciente_nome"></div>
+				</div>
+
+				<div class="form-group col-md-4">
+					<label>Sobrenome</label>
+					<input type="text"
+						   v-model="choosePaciente.paciente_sobrenome"
+						   class="form-control"
+						   autocomplete="off"
+					/>
+
+					<div class="text-danger" v-html="formValidate.paciente_sobrenome"></div>
 				</div>
 
 				<!--Nome da Mãe-->
@@ -176,7 +199,9 @@
 						   class="form-control"
 						   autocomplete="off"
 					/>
-					<div class="text-danger" v-html=""></div>
+
+
+					<div class="text-danger" v-html="formValidate.paciente_nome_completo_mae"></div>
 				</div>
 
 				<div class="form-group col-md-4">
@@ -186,7 +211,7 @@
 						   class="form-control"
 						   autocomplete="off"
 					/>
-					<div class="text-danger" v-html=""></div>
+					<div class="text-danger" v-html="formValidate.paciente_data_nascimento"></div>
 				</div>
 
 				<div class="form-group col-md-4">
@@ -196,7 +221,7 @@
 						   class="form-control"
 						   autocomplete="off"
 					/>
-					<div class="text-danger" v-html=""></div>
+					<div class="text-danger" v-html="formValidate.paciente_cpf"></div>
 				</div>
 
 				<div class="form-group col-md-4">
@@ -206,7 +231,7 @@
 						   class="form-control"
 						   autocomplete="off"
 					/>
-					<div class="text-danger" v-html=""></div>
+					<div class="text-danger" v-html="formValidate.paciente_cns"></div>
 				</div>
 
 				<div class="form-group col-md-4">
@@ -216,7 +241,7 @@
 						   class="form-control"
 						   autocomplete="off"
 					/>
-					<div class="text-danger" v-html=""></div>
+					<div class="text-danger" v-html="formValidate.paciente_cep"></div>
 				</div>
 
 				<div class="form-group col-md-4">
@@ -226,7 +251,7 @@
 						   class="form-control"
 						   autocomplete="off"
 					/>
-					<div class="text-danger" v-html=""></div>
+					<div class="text-danger" v-html="formValidate.paciente_endereco"></div>
 				</div>
 
 				<div class="form-group col-md-4">
@@ -236,7 +261,7 @@
 						   class="form-control"
 						   autocomplete="off"
 					/>
-					<div class="text-danger" v-html=""></div>
+					<div class="text-danger" v-html="formValidate.paciente_numero_endereco"></div>
 				</div>
 
 				<div class="form-group col-md-4">
@@ -246,7 +271,7 @@
 						   class="form-control"
 						   autocomplete="off"
 					/>
-					<div class="text-danger" v-html=""></div>
+					<div class="text-danger" v-html="formValidate.paciente_complemento"></div>
 				</div>
 
 				<div class="form-group col-md-4">
@@ -256,7 +281,7 @@
 						   class="form-control"
 						   autocomplete="off"
 					/>
-					<div class="text-danger" v-html=""></div>
+					<div class="text-danger" v-html="formValidate.paciente_bairro"></div>
 				</div>
 
 				<div class="form-group col-md-4">
@@ -266,7 +291,7 @@
 						   class="form-control"
 						   autocomplete="off"
 					/>
-					<div class="text-danger" v-html=""></div>
+					<div class="text-danger" v-html="formValidate.paciente_cidade"></div>
 				</div>
 
 				<div class="form-group col-md-4">
@@ -276,10 +301,15 @@
 						   class="form-control"
 						   autocomplete="off"
 					/>
-					<div class="text-danger" v-html=""></div>
+					<div class="text-danger" v-html="formValidate.paciente_uf"></div>
 				</div>
 
 			</div>
+		</div>
+
+		<div class="card-footer">
+			<button @click="clearAll" type="button" class="btn btn-danger mr-2" >Cancelar</button>
+			<button @click="update" type="button" class="btn btn-primary mr-2" >Confirmar</button>
 		</div>
 	</Edit>
 </section>

@@ -43,10 +43,32 @@ Vue.component('Edit', {
         `
 });
 
+Vue.component('modalsimples', {
+	props: ['iconDelete'],
+	template: `
+          <div class="modal" id="modalsimples" role="dialog" style="display: block; overflow: scroll; background-color: rgba(53,46,47, .5);">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">                            
+                <!-- Modal body -->
+                <div class="modal-body">                 
+                  <slot></slot>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer" >
+                  <slot name="footer"></slot>
+                </div>        
+              </div>
+            </div>
+          </div>
+            `,
+});
+
 var vm1 = new Vue({
 	el: '#app',
 	data: {
 		newPaciente: {
+			paciente_nome: '',
+			paciente_sobrenome: '',
 			paciente_nome_completo: '',
 			paciente_nome_completo_mae: '',
 			paciente_data_nascimento: '',
@@ -64,42 +86,110 @@ var vm1 = new Vue({
 		listPacientes: false,
 		formNewPaciente: false,
 		formEditPaciente: false,
-		deletePaciente: false,
+		modalDeletePaciente: false,
 		pacientes: [],
 		responsePacientes: [],
-		choosePaciente:{},
+		choosePaciente: [],
 		dados_cep: {},
 
 		titulo: '',
 		alert: false,
-		msgSucesso: 'Dados salvos com sucesso',
+		msgSucesso: '',
 		pesquisaPacientes: '',
+		iconDelete: BASE_URL +'public/assets/img/icon-delete.png',
 		formValidate: [],
 
 		//pagination
 		pagination: true,
 		currentPage: 0,
-		rowCountPage:10,
+		rowCountPage:8,
 		totalData:0,
 		pageRange:4,
 	},
 
 	created() {
-		this.getAllPacientes();
+		this.list();
 	},
 
 	methods: {
-		getAllPacientes() {
+		list() {
 			axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 			this.listPacientes = true;
 			this.titulo = 'Todos os pacientes'
 
 			axios.get(BASE_URL + 'pacientes/list').then(function(response){
-				vm1.responsePacientes = response.data.pacientes;
-				vm1.getData(response.data.pacientes);
+				let res = response.data.pacientes;
+
+				//PERCORRE O ARRAY FORMATANDO AS DATAS DE NASCIMENTO
+				res.forEach(function(el, i){
+					el.paciente_data_nascimento = moment(el.paciente_data_nascimento).format("DD/MM/YYYY");
+				});
+
+				vm1.responsePacientes = res;
+				vm1.getData(res);
 			}).catch(err => {
 				console.log(err);
+			})
+		},
+
+		insert() {
+			axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+			const nome = vm1.newPaciente.paciente_nome;
+			const sobrenome = vm1.newPaciente.paciente_sobrenome;
+
+			vm1.newPaciente.paciente_nome_completo = nome +' ' +sobrenome;
+
+			var formData = vm1.formData(vm1.newPaciente);
+			axios.post(BASE_URL + 'pacientes/insert', formData).then(function(response){
+				if(response.data.erro == false) {
+					vm1.clearAll();
+					vm1.msgSucesso = 'Dados salvos com sucesso.';
+					vm1.alert = true;
+				}
+				if(response.data.erro == true) {
+					vm1.formValidate = response.data.mensagem;
+				}
+			});
+		},
+
+		update(){
+			axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+			const nome = vm1.choosePaciente.paciente_nome;
+			const sobrenome = vm1.choosePaciente.paciente_sobrenome;
+
+			vm1.choosePaciente.paciente_nome_completo = nome +' ' +sobrenome;
+
+			var formData = vm1.formData(vm1.choosePaciente);
+
+			axios.post(BASE_URL + 'pacientes/update', formData).then(function(response){
+				if(response.data.erro == false) {
+					vm1.clearAll();
+					vm1.msgSucesso = 'Dados salvos com sucesso.';
+					vm1.alert = true;
+				}
+				if(response.data.erro == true) {
+					vm1.formValidate = response.data.mensagem;
+				}
+			})
+		},
+
+		deletePaciente() {
+			axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+			const formData = vm1.formData(vm1.choosePaciente);
+
+			axios.post(BASE_URL + 'pacientes/delete', formData).then(function(response){
+				if(response.data.erro == false) {
+					vm1.clearAll();
+					vm1.msgSucesso = 'Registro excluído com sucesso.';
+					vm1.alert = true;
+				}
+				if(response.data.erro == true) {
+					vm1.formValidate = response.data.mensagem;
+				}
 			})
 		},
 
@@ -117,37 +207,30 @@ var vm1 = new Vue({
 			this.titulo = 'Editar paciente'
 		},
 
-		insert() {
+		openModalDelete(paciente_id) {
+			this.listPacientes = true;
+			this.formNewPaciente = false;
+			this.formEditPaciente = false;
+
+			vm1.choosePaciente.paciente_id = paciente_id;
+
+			this.modalDeletePaciente = true;
+		},
+
+		getPacienteId(paciente_id) {
 			axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-			var formData = vm1.formData(vm1.newPaciente);
-			axios.post(BASE_URL + 'pacientes/insert', formData).then(function(response){
+			axios.get(BASE_URL + 'pacientes/get_paciente_id', {
+				params: {
+					'paciente_id': paciente_id,
+				}
+			}).then(function(response){
 				if(response.data.erro == false) {
-					this.clearAll();
-					this.alert = true;
-				} else {
-					vm1.formValidate = response.data.mensagem;
-					return false;
+					vm1.choosePaciente = response.data.dados_paciente;
 				}
 			});
-		},
 
-		updateUser(){
-			var formData = vm1.formData(vm1.chooseUser);
-
-			axios.post(BASE_URL + 'pacientes/update', formData).then(function(response){
-				if(response.data.error){
-					vm1.formValidate = response.data.mensagem;
-				}else{
-					vm1.clear();
-					location.reload();
-					vm1.alertMsg = true;
-					vm1.successMSG = 'Usuário adicionado com sucesso';
-				}
-			})
-		},
-		deleteUser(){
-
+			this.openModalEdit();
 		},
 
 		getData(response) {
@@ -164,7 +247,7 @@ var vm1 = new Vue({
 
 		pageUpdate(pageNumber){
 			vm1.currentPage = pageNumber;
-			this.getAllPacientes();
+			this.list();
 		},
 
 		searchCep() {
@@ -188,7 +271,8 @@ var vm1 = new Vue({
 
 		clearAll() {
 			vm1.newPaciente = {
-				paciente_nome_completo: '',
+				paciente_nome: '',
+				paciente_sobrenome: '',
 				paciente_nome_completo_mae: '',
 				paciente_data_nascimento: '',
 				paciente_cpf: '',
@@ -204,12 +288,12 @@ var vm1 = new Vue({
 			vm1.formValidate = [];
 
 			this.formNewPaciente = false;
-			this.deletePaciente = false;
+			this.modalDeletePaciente = false;
 			this.formEditPaciente = false;
 			this.listPacientes = true;
 			this.titulo = 'Todos os pacientes'
 
-			this.getAllPacientes();
+			this.list();
 		},
 
 		formData(obj){
@@ -231,9 +315,19 @@ var vm1 = new Vue({
 			} else {
 				this.pagination = false;
 
+				//FAZ A BUSCA DO PACIENTE POR DIVERSOS FILTROS
 				return this.pacientes.filter(paciente =>
+					paciente.paciente_id === this.pesquisaPacientes ||
+					paciente.paciente_nome.toLowerCase() === this.pesquisaPacientes ||
 					paciente.paciente_nome_completo.toLowerCase() === this.pesquisaPacientes ||
-					paciente.paciente_id === this.pesquisaPacientes
+					paciente.paciente_cpf === this.pesquisaPacientes ||
+					paciente.paciente_cpf.replace(/[^0-9]+/g,'') === this.pesquisaPacientes ||
+					paciente.paciente_cns === this.pesquisaPacientes ||
+					paciente.paciente_uf === this.pesquisaPacientes ||
+					paciente.paciente_cidade === this.pesquisaPacientes ||
+					paciente.paciente_bairro === this.pesquisaPacientes ||
+					paciente.paciente_cep === this.pesquisaPacientes ||
+					paciente.paciente_cep.replace(/[^0-9]+/g,'') === this.pesquisaPacientes
 				);
 			}
 		}
