@@ -19,8 +19,11 @@
 						<label>Pesquisar pacientes</label>
 						<input v-model="pesquisaPacientes" type="text" class="form-control"/>
 					</div>
+
 					<div class="col-sm-12 col-md-3"></div>
+
 					<div class="col-sm-12 col-md-3"></div>
+
 					<div class="col-sm-12 col-md-3">
 						<button @click="openModalNew" type="button" class="btn btn-primary form-control" style="margin-top: 28px">
 							<i class="fas fa-user"></i>&nbsp;Novo paciente

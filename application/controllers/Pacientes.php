@@ -2,6 +2,8 @@
 
 defined('BASEPATH') OR exit('Ação não permitida');
 
+require FCPATH . '/vendor/autoload.php';
+use Brazanation\Documents\Cns;
 class Pacientes extends CI_Controller {
 
 	public function __construct() {
@@ -23,7 +25,7 @@ class Pacientes extends CI_Controller {
 		$this->load->view('layout/footer');
 	}
 
-	public function list() {
+	public function list_pacientes() {
 		if( ! $this->input->is_ajax_request()) {
 			exit('Ação não permitida');
 		}
@@ -50,7 +52,7 @@ class Pacientes extends CI_Controller {
 		$this->form_validation->set_rules('paciente_nome_completo_mae', 'Sobrenome', 'trim|required|min_length[2]|max_length[200]');
 		$this->form_validation->set_rules('paciente_data_nascimento', 'Data de nascimento', 'trim|required');
 		$this->form_validation->set_rules('paciente_cpf', 'CPF', 'trim|required|exact_length[14]|callback_valida_cpf');
-		$this->form_validation->set_rules('paciente_cns', 'CNS', 'trim|required|exact_length[8]');
+		$this->form_validation->set_rules('paciente_cns', 'CNS', 'trim|required|exact_length[15]|callback_valida_cns');
 		$this->form_validation->set_rules('paciente_cep', 'CEP', 'trim|required|exact_length[9]');
 		$this->form_validation->set_rules('paciente_endereco', 'Endereço', 'trim|required|min_length[4]|max_length[200]');
 		$this->form_validation->set_rules('paciente_numero_endereco', 'Nº', 'trim|required|max_length[15]');
@@ -123,7 +125,7 @@ class Pacientes extends CI_Controller {
 		$this->form_validation->set_rules('paciente_nome_completo_mae', 'Sobrenome', 'trim|required|min_length[2]|max_length[200]');
 		$this->form_validation->set_rules('paciente_data_nascimento', 'Data de nascimento', 'trim|required');
 		$this->form_validation->set_rules('paciente_cpf', 'CPF', 'trim|required|exact_length[14]|callback_valida_cpf');
-		$this->form_validation->set_rules('paciente_cns', 'CNS', 'trim|required|exact_length[8]');
+		$this->form_validation->set_rules('paciente_cns', 'CNS', 'trim|required|exact_length[15]|callback_valida_cns');
 		$this->form_validation->set_rules('paciente_cep', 'CEP', 'trim|required|exact_length[9]');
 		$this->form_validation->set_rules('paciente_endereco', 'Endereço', 'trim|required|min_length[4]|max_length[200]');
 		$this->form_validation->set_rules('paciente_numero_endereco', 'Nº', 'trim|required|max_length[15]');
@@ -252,11 +254,10 @@ class Pacientes extends CI_Controller {
 	}
 
 	public function valida_cpf($cpf) {
-
 		if ($this->input->post('paciente_id')) {
 			//EDITAR
 
-			$paciente_id = $this->input->post('paciente_id');
+			$paciente_id = $this->input->post('paciente_id', true);
 
 			if ($this->core_model->get_by_id('pacientes_cadastro', array('paciente_id !=' => $paciente_id, 'paciente_cpf' => $cpf))) {
 				$this->form_validation->set_message('valida_cpf', 'O campo {field} já existe, ele deve ser único');
@@ -281,10 +282,10 @@ class Pacientes extends CI_Controller {
 			// Calcula os números para verificar se o CPF é verdadeiro
 			for ($t = 9; $t < 11; $t++) {
 				for ($d = 0, $c = 0; $c < $t; $c++) {
-					$d += $cpf[$c] * (($t + 1) - $c); //Se PHP version < 7.4, $cpf{$c}
+					$d += $cpf[$c] * (($t + 1) - $c);
 				}
 				$d = ((10 * $d) % 11) % 10;
-				if ($cpf[$c] != $d) { //Se PHP version < 7.4, $cpf{$c}
+				if ($cpf[$c] != $d) {
 					$this->form_validation->set_message('valida_cpf', 'Por favor digite um CPF válido');
 					return FALSE;
 				}
@@ -293,5 +294,33 @@ class Pacientes extends CI_Controller {
 		}
 	}
 
-	public function valida_cns() {}
+	public function valida_cns($cns) {
+		if ($this->input->post('paciente_id')) {
+			//EDITAR
+
+			$paciente_id = $this->input->post('paciente_id', true);
+
+			if ($this->core_model->get_by_id('pacientes_cadastro', array('paciente_id !=' => $paciente_id, 'paciente_cns' => $cns))) {
+				$this->form_validation->set_message('valida_cns', 'O campo {field} já existe, ele deve ser único');
+				return FALSE;
+			}
+		} else {
+			//CADASTRAR
+
+			if ($this->core_model->get_by_id('pacientes_cadastro', array('paciente_cns' => $cns))) {
+				$this->form_validation->set_message('valida_cns', 'O campo {field} já existe, ele deve ser único');
+				return FALSE;
+			}
+		}
+
+		$document = Cns::createFromString($cns);
+
+		if ($document === false) {
+			$this->form_validation->set_message('valida_cns', 'Digite um CNS válido.');
+
+			return FALSE;
+		} else {
+			return TRUE;
+		}
+	}
 }

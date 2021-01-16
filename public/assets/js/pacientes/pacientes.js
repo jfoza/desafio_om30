@@ -118,7 +118,7 @@ var vm1 = new Vue({
 			this.listPacientes = true;
 			this.titulo = 'Todos os pacientes'
 
-			axios.get(BASE_URL + 'pacientes/list').then(function(response){
+			axios.get(BASE_URL + 'pacientes/list_pacientes').then(function(response){
 				let res = response.data.pacientes;
 
 				//PERCORRE O ARRAY FORMATANDO AS DATAS DE NASCIMENTO
@@ -318,6 +318,8 @@ var vm1 = new Vue({
 				//FAZ A BUSCA DO PACIENTE POR DIVERSOS FILTROS
 				return this.pacientes.filter(paciente =>
 					paciente.paciente_id === this.pesquisaPacientes ||
+					paciente.paciente_nome === this.pesquisaPacientes ||
+					paciente.paciente_nome_completo === this.pesquisaPacientes ||
 					paciente.paciente_nome.toLowerCase() === this.pesquisaPacientes ||
 					paciente.paciente_nome_completo.toLowerCase() === this.pesquisaPacientes ||
 					paciente.paciente_cpf === this.pesquisaPacientes ||
@@ -327,6 +329,9 @@ var vm1 = new Vue({
 					paciente.paciente_cidade === this.pesquisaPacientes ||
 					paciente.paciente_bairro === this.pesquisaPacientes ||
 					paciente.paciente_cep === this.pesquisaPacientes ||
+					paciente.paciente_uf.toLowerCase() === this.pesquisaPacientes ||
+					paciente.paciente_cidade.toLowerCase() === this.pesquisaPacientes ||
+					paciente.paciente_bairro.toLowerCase() === this.pesquisaPacientes ||
 					paciente.paciente_cep.replace(/[^0-9]+/g,'') === this.pesquisaPacientes
 				);
 			}

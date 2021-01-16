@@ -62,6 +62,7 @@ $autoload['libraries'] = array(
 	'ion_auth',
 	'database',
 	'form_validation',
+	'migration',
 );
 
 /*
