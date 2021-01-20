@@ -4,12 +4,6 @@
 <head>
 	<meta charset="UTF-8">
 	<meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
-
-	<style>
-		/*.modal-backdrop.show {*/
-		/*	opacity: .0 !important;*/
-		/*}*/
-	</style>
     
 	<?php echo (isset($titulo) ? '<title>Cadastro de pacientes | ' .$titulo .'</title>' : '<title>Cadastro de pacientes</title>') ?>
 
@@ -18,6 +12,7 @@
 
 	<!-- Template CSS -->
 	<link rel="stylesheet" href="<?php echo base_url('public/assets/css/style.css'); ?>">
+	<link rel="stylesheet" href="<?php echo base_url('public/assets/css/style2.css'); ?>">
 	<link rel="stylesheet" href="<?php echo base_url('public/assets/css/components.css'); ?>">
 
 	<?php if(isset($styles)) : ?>

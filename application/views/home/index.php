@@ -13,19 +13,19 @@
 							<div class="row-fluid">
 								<div class="text-left">
 									<a :href="linkFacebook" target="_blank" title="Facebook">
-										<img style="margin-bottom: 10px;" :src="logoFacebook" title="Facebook"/>
+										<img class="img-link" :src="logoFacebook" title="Facebook"/>
 									</a>
 								</div>
 
 								<div class="text-left">
 									<a :href="linkLinkedin" target="_blank" title="Linkedin">
-										<img style="margin-bottom: 10px;" :src="logoLinkedin" title="Linkedin"/>
+										<img class="img-link" :src="logoLinkedin" title="Linkedin"/>
 									</a>
 								</div>
 
 								<div class="text-left">
 									<a :href="linkSite" target="_blank" title="Site oficial">
-										<img :src="logoSite" title="Site oficial"/>
+										<img class="img-link" :src="logoSite" title="Site oficial"/>
 									</a>
 								</div>
 							</div>

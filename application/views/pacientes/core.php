@@ -9,10 +9,11 @@
 				X
 			</button>
 		</div>
+
 		<div class="card-body">
 			<div class="form-row">
 				<!--Nome-->
-				<div class="form-group col-md-4">
+				<div class="form-group col-md-3">
 					<label>Nome</label>
 					<input type="text"
 						   v-model="newPaciente.paciente_nome"
@@ -22,7 +23,7 @@
 					<div class="form-text text-danger" v-html="formValidate.paciente_nome"></div>
 				</div>
 
-				<div class="form-group col-md-4">
+				<div class="form-group col-md-3">
 					<label>Sobrenome</label>
 					<input type="text"
 						   v-model="newPaciente.paciente_sobrenome"
@@ -43,17 +44,18 @@
 					<div class="form-text text-danger" v-html="formValidate.paciente_nome_completo_mae"></div>
 				</div>
 
-				<div class="form-group col-md-4">
+				<div class="form-group col-md-2">
 					<label>Data de Nascimento</label>
 					<input type="date"
 						   v-model="newPaciente.paciente_data_nascimento"
 						   class="form-control"
 						   autocomplete="off"
+						   placeholder="dd/mm/aaaa"
 					/>
 					<div class="text-danger" v-html="formValidate.paciente_data_nascimento"></div>
 				</div>
 
-				<div class="form-group col-md-4">
+				<div class="form-group col-md-3">
 					<label>CPF</label>
 					<input type="text"
 						   v-model="newPaciente.paciente_cpf"
@@ -64,7 +66,7 @@
 					<div class="text-danger" v-html="formValidate.paciente_cpf"></div>
 				</div>
 
-				<div class="form-group col-md-4">
+				<div class="form-group col-md-3">
 					<label>CNS</label>
 					<input type="text"
 						   v-model="newPaciente.paciente_cns"
@@ -74,7 +76,7 @@
 					<div class="text-danger" v-html="formValidate.paciente_cns"></div>
 				</div>
 
-				<div class="form-group col-md-4">
+				<div class="form-group col-md-2">
 					<label>CEP</label>
 					<input type="text"
 						   v-model="newPaciente.paciente_cep"
@@ -96,7 +98,7 @@
 					<div class="text-danger" v-html="formValidate.paciente_endereco"></div>
 				</div>
 
-				<div class="form-group col-md-4">
+				<div class="form-group col-md-2">
 					<label>Nº</label>
 					<input type="text"
 						   v-model="newPaciente.paciente_numero_endereco"
@@ -106,7 +108,7 @@
 					<div class="text-danger" v-html="formValidate.paciente_numero_endereco"></div>
 				</div>
 
-				<div class="form-group col-md-4">
+				<div class="form-group col-md-3">
 					<label>Complemento</label>
 					<input type="text"
 						   v-model="newPaciente.paciente_complemento"
@@ -116,7 +118,7 @@
 					<div class="text-danger" v-html="formValidate.paciente_complemento"></div>
 				</div>
 
-				<div class="form-group col-md-4">
+				<div class="form-group col-md-2">
 					<label>Bairro</label>
 					<input type="text"
 						   v-model="newPaciente.paciente_bairro"
@@ -126,7 +128,7 @@
 					<div class="text-danger" v-html="formValidate.paciente_bairro"></div>
 				</div>
 
-				<div class="form-group col-md-4">
+				<div class="form-group col-md-3">
 					<label>Cidade</label>
 					<input type="text"
 						   v-model="newPaciente.paciente_cidade"
@@ -136,7 +138,7 @@
 					<div class="text-danger" v-html="formValidate.paciente_cidade"></div>
 				</div>
 
-				<div class="form-group col-md-4">
+				<div class="form-group col-md-2">
 					<label>UF</label>
 					<input type="text"
 						   v-model="newPaciente.paciente_uf"
@@ -144,6 +146,28 @@
 						   autocomplete="off"
 					/>
 					<div class="text-danger" v-html="formValidate.paciente_uf"></div>
+				</div>
+
+				<div class="form-group col-md-3">
+					<label>Imagem(Máximo 300X400px)</label>
+
+					<div v-if="showImage == false">
+						<input type="file" @change="onFileSelected" id="arquivo" class="form-control"/>
+						<label class="label-file" for="arquivo">Enviar arquivo</label>
+					</div>
+
+					<div v-if="showImage" class="imagem">
+						<img :src="imageUrl +imageName" width="200" class="img-thumbnail"/>
+						<div class="capa">
+							<div class="alinhamento-vertical">
+								<button @click="replaceImage" id="btn-troca-imagem" type="button" class="btn btn-link">
+									Trocar imagem
+								</button>
+							</div>
+						</div>
+
+						<div class="text-danger">{{ imageValidate }}</div>
+					</div>
 				</div>
 			</div>
 		</div>

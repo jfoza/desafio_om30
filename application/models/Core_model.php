@@ -20,6 +20,7 @@ class Core_model extends CI_Model {
 
 	public function get_by_id($table = null, $condition = null) {
 		if($table && is_array($condition) && $this->db->table_exists($table)) {
+
 			$this->db->where($condition);
 			$this->db->limit(1);
 
@@ -28,7 +29,6 @@ class Core_model extends CI_Model {
 		else {
 			return false;
 		}
-
 	}
 
 	public function insert($table = null, $data = null, $get_last_id = null) {
@@ -85,17 +85,6 @@ class Core_model extends CI_Model {
 		} else {
 			return false;
 		}
-	}
-
-	public function generate_unique_code($tabela = null, $tipo_codigo = null, $tam_codigo = null, $campo_procura = null) {
-		do {
-			$codigo = random_string($tipo_codigo, $tam_codigo);
-			$this->db->where($campo_procura, $codigo);
-			$this->db->from($tabela);
-		}
-		while($this->db->count_all_results() >= 1);
-
-		return $codigo;
 	}
 }
 

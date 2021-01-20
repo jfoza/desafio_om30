@@ -14,7 +14,6 @@ class Pacientes extends CI_Controller {
 		$data = array(
 			'scripts' => array(
 				'js/pacientes/pacientes.js',
-				'js/pacientes/components.js',
 				'js/pagination.js',
 				'js/mask/mask.min.js',
 			),
@@ -60,6 +59,7 @@ class Pacientes extends CI_Controller {
 		$this->form_validation->set_rules('paciente_bairro', 'Bairro', 'trim|required|min_length[2]|max_length[50]');
 		$this->form_validation->set_rules('paciente_cidade', 'Cidade', 'trim|required|min_length[2]|max_length[100]');
 		$this->form_validation->set_rules('paciente_uf', 'UF', 'trim|required|exact_length[2]');
+		$this->form_validation->set_rules('paciente_imagem', 'Imagem', 'trim');
 
 		$retorno = array();
 
@@ -81,6 +81,7 @@ class Pacientes extends CI_Controller {
 					'paciente_bairro',
 					'paciente_cidade',
 					'paciente_uf',
+					'paciente_imagem',
 				), $this->input->post()
 			);
 
@@ -109,6 +110,7 @@ class Pacientes extends CI_Controller {
 				'paciente_bairro' => form_error('paciente_bairro'),
 				'paciente_cidade' => form_error('paciente_cidade'),
 				'paciente_uf' => form_error('paciente_uf'),
+				'paciente_imagem' => form_error('paciente_url_imagem'),
 			);
 
 			echo json_encode($retorno);
@@ -218,11 +220,105 @@ class Pacientes extends CI_Controller {
 			echo json_encode($retorno);
 		}
 
+		$data = $this->core_model->get_by_id('pacientes_cadastro', array('pacientes_cadastro.paciente_id' => $paciente_id));
+
 		$this->core_model->delete('pacientes_cadastro', array('paciente_id' => $paciente_id));
 
 		$retorno['erro'] = false;
 
+		if($imagem = $data->paciente_imagem) {
+			if($this->delete_image($imagem)) {
+				$retorno['erro'] = false;
+			} else {
+				$retorno['erro'] = true;
+				$retorno['mensagem'] = 'Não foi possível excluir a imagem.';
+			}
+
+			echo json_encode($retorno);
+
+			die();
+		}
+
 		echo json_encode($retorno);
+	}
+
+	public function upload() {
+		$config['upload_path']         = './uploads/imagens/';
+		$config['allowed_types']       = 'jpg|png|jpeg|JPG|PNG|JPEG';
+		$config['max_size']            = 2048;
+		$config['max_width']           = 300;
+		$config['max_height']          = 300;
+		$config['encrypt-name']        = true;
+		$config['max_filename']        = 200;
+		$config['file_ext_tolower']    = true;
+
+		$this->load->library('upload', $config);
+
+		if ($this->upload->do_upload('image')) {
+			$uploaded_data = $this->upload->data();
+			$uploaded_data_file_name = $this->upload->data('file_name');
+
+			$data = array(
+				'uploaded_data' => $uploaded_data,
+				'nome'          => $uploaded_data_file_name,
+				'error'         => false,
+			);
+
+		} else {
+			$data = array(
+				'mensagem' => $this->upload->display_errors(),
+				'error' => true,
+			);
+		}
+
+		echo json_encode($data);
+	}
+
+	public function replace_image() {
+		$foto_paciente = $this->input->post('foto_paciente', true);
+
+		$retorno = [];
+
+		if($foto_paciente) {
+			$foto = FCPATH .'uploads/imagens/'.$foto_paciente;
+
+			if(file_exists($foto)) {
+				$retorno['erro'] = false;
+				unlink($foto);
+
+			} else {
+				$retorno['erro'] = true;
+				$retorno['mensagem'] = 'Arquivo inexistente';
+			}
+
+			echo json_encode($retorno);
+		} else {
+			$retorno['erro'] = true;
+			$retorno['mensagem'] = 'Nenhuma imagem selecionada';
+
+			echo json_encode($retorno);
+		}
+	}
+
+	public function delete_image($imagem = null) {
+		$foto_paciente = $imagem;
+
+		$retorno = [];
+
+		if($foto_paciente) {
+			$foto = FCPATH .'uploads/imagens/'.$foto_paciente;
+
+			if(file_exists($foto)) {
+				unlink($foto);
+
+				return true;
+
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 
 	public function get_paciente_id() {

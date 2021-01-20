@@ -81,23 +81,30 @@ var vm1 = new Vue({
 			paciente_bairro: '',
 			paciente_cidade: '',
 			paciente_uf: '',
+			paciente_url_imagem: '',
+			nome_imagem: '',
 		},
 
 		listPacientes: false,
 		formNewPaciente: false,
 		formEditPaciente: false,
 		modalDeletePaciente: false,
+		showImage: false,
 		pacientes: [],
 		responsePacientes: [],
 		choosePaciente: [],
+		chooseImage: [],
 		dados_cep: {},
 
 		titulo: '',
 		alert: false,
 		msgSucesso: '',
 		pesquisaPacientes: '',
+		imageName: '',
 		iconDelete: BASE_URL +'public/assets/img/icon-delete.png',
+		imageUrl: BASE_URL + 'uploads/imagens/',
 		formValidate: [],
+		imageValidate: '',
 
 		//pagination
 		pagination: true,
@@ -109,6 +116,10 @@ var vm1 = new Vue({
 
 	created() {
 		this.list();
+
+		return {
+			selectedFile: null
+		}
 	},
 
 	methods: {
@@ -143,12 +154,12 @@ var vm1 = new Vue({
 
 			var formData = vm1.formData(vm1.newPaciente);
 			axios.post(BASE_URL + 'pacientes/insert', formData).then(function(response){
-				if(response.data.erro == false) {
+				if(response.data.erro === false) {
 					vm1.clearAll();
 					vm1.msgSucesso = 'Dados salvos com sucesso.';
 					vm1.alert = true;
 				}
-				if(response.data.erro == true) {
+				if(response.data.erro === true) {
 					vm1.formValidate = response.data.mensagem;
 				}
 			});
@@ -165,12 +176,12 @@ var vm1 = new Vue({
 			var formData = vm1.formData(vm1.choosePaciente);
 
 			axios.post(BASE_URL + 'pacientes/update', formData).then(function(response){
-				if(response.data.erro == false) {
+				if(response.data.erro === false) {
 					vm1.clearAll();
 					vm1.msgSucesso = 'Dados salvos com sucesso.';
 					vm1.alert = true;
 				}
-				if(response.data.erro == true) {
+				if(response.data.erro === true) {
 					vm1.formValidate = response.data.mensagem;
 				}
 			})
@@ -182,15 +193,53 @@ var vm1 = new Vue({
 			const formData = vm1.formData(vm1.choosePaciente);
 
 			axios.post(BASE_URL + 'pacientes/delete', formData).then(function(response){
-				if(response.data.erro == false) {
+				if(response.data.erro === false) {
 					vm1.clearAll();
 					vm1.msgSucesso = 'Registro excluído com sucesso.';
 					vm1.alert = true;
 				}
-				if(response.data.erro == true) {
+				if(response.data.erro === true) {
 					vm1.formValidate = response.data.mensagem;
 				}
 			})
+		},
+
+		onFileSelected(event) {
+			this.selectedFile = event.target.files[0];
+
+			const fd = new FormData();
+
+			fd.append('image', this.selectedFile, this.selectedFile.name,  {
+
+			});
+
+			axios.post(BASE_URL +'pacientes/upload', fd)
+				.then(response => {
+					if(response.data.error === false) {
+						this.imageName = response.data.nome;
+						this.newPaciente.paciente_imagem = this.imageName;
+						this.showImage = true;
+					}
+					if(response.error === true) {
+						vm1.imageValidate = response.data.mensagem;
+					}
+				})
+		},
+
+		replaceImage() {
+			vm1.chooseImage.foto_paciente = vm1.imageName;
+
+			const formData = vm1.formData(vm1.chooseImage);
+
+			axios.post(BASE_URL +'pacientes/replace_image', formData)
+				.then(response => {
+					if(response.data.erro === false) {
+						this.showImage = false;
+					}
+					if(response.erro === true) {
+
+					}
+				})
 		},
 
 		openModalNew() {
@@ -284,12 +333,16 @@ var vm1 = new Vue({
 				paciente_bairro: '',
 				paciente_cidade: '',
 				paciente_uf: '',
+				paciente_url_imagem: '',
 			};
+
+			this.selectedFile = null;
 			vm1.formValidate = [];
 
 			this.formNewPaciente = false;
 			this.modalDeletePaciente = false;
 			this.formEditPaciente = false;
+			this.showImage = false;
 			this.listPacientes = true;
 			this.titulo = 'Todos os pacientes'
 
@@ -303,7 +356,6 @@ var vm1 = new Vue({
 			}
 			return formData;
 		},
-
 	},
 
 	computed: {
