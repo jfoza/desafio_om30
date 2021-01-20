@@ -88,6 +88,7 @@ var vm1 = new Vue({
 		listPacientes: false,
 		formNewPaciente: false,
 		formEditPaciente: false,
+		infoPaciente: false,
 		modalDeletePaciente: false,
 		showImage: false,
 		pacientes: [],
@@ -216,10 +217,18 @@ var vm1 = new Vue({
 			axios.post(BASE_URL +'pacientes/upload', fd)
 				.then(response => {
 					if(response.data.error === false) {
-						this.imageName = response.data.nome;
-						this.newPaciente.paciente_imagem = this.imageName;
-						this.showImage = true;
+						if(vm1.formEditPaciente === true) {
+							vm1.choosePaciente.paciente_imagem = response.data.nome;
+							this.showImage = true;
+						}
+
+						if(vm1.formNewPaciente === true) {
+							this.imageName = response.data.nome;
+							this.newPaciente.paciente_imagem = this.imageName;
+							this.showImage = true;
+						}
 					}
+
 					if(response.error === true) {
 						vm1.imageValidate = response.data.mensagem;
 					}
@@ -227,7 +236,14 @@ var vm1 = new Vue({
 		},
 
 		replaceImage() {
-			vm1.chooseImage.foto_paciente = vm1.imageName;
+			if(vm1.formNewPaciente === true) {
+				vm1.chooseImage.foto_paciente = vm1.imageName;
+			}
+
+			if(vm1.formEditPaciente === true) {
+				vm1.chooseImage.foto_paciente = vm1.choosePaciente.paciente_imagem;
+				vm1.chooseImage.paciente_id = vm1.choosePaciente.paciente_id;
+			}
 
 			const formData = vm1.formData(vm1.chooseImage);
 
@@ -235,6 +251,11 @@ var vm1 = new Vue({
 				.then(response => {
 					if(response.data.erro === false) {
 						this.showImage = false;
+
+						if(vm1.formEditPaciente === true) {
+							vm1.choosePaciente.paciente_imagem = "";
+							this.showImage = false;
+						}
 					}
 					if(response.erro === true) {
 
@@ -275,7 +296,15 @@ var vm1 = new Vue({
 				}
 			}).then(function(response){
 				if(response.data.erro == false) {
-					vm1.choosePaciente = response.data.dados_paciente;
+					const res = response.data.dados_paciente;
+
+					if(res.paciente_imagem == "" || res.paciente_imagem == null) {
+						vm1.showImage = false;
+					} else {
+						vm1.showImage = true;
+					}
+
+					vm1.choosePaciente = res;
 				}
 			});
 
@@ -338,10 +367,12 @@ var vm1 = new Vue({
 
 			this.selectedFile = null;
 			vm1.formValidate = [];
+			vm1.choosePaciente = [];
 
 			this.formNewPaciente = false;
 			this.modalDeletePaciente = false;
 			this.formEditPaciente = false;
+			this.infoPaciente = false;
 			this.showImage = false;
 			this.listPacientes = true;
 			this.titulo = 'Todos os pacientes'

@@ -135,6 +135,7 @@ class Pacientes extends CI_Controller {
 		$this->form_validation->set_rules('paciente_bairro', 'Bairro', 'trim|required|min_length[2]|max_length[50]');
 		$this->form_validation->set_rules('paciente_cidade', 'Cidade', 'trim|required|min_length[2]|max_length[100]');
 		$this->form_validation->set_rules('paciente_uf', 'UF', 'trim|required|exact_length[2]');
+		$this->form_validation->set_rules('paciente_imagem', 'Imagem', 'trim');
 
 		$retorno = array();
 
@@ -156,6 +157,7 @@ class Pacientes extends CI_Controller {
 					'paciente_bairro',
 					'paciente_cidade',
 					'paciente_uf',
+					'paciente_imagem',
 				), $this->input->post()
 			);
 
@@ -193,6 +195,7 @@ class Pacientes extends CI_Controller {
 				'paciente_bairro' => form_error('paciente_bairro'),
 				'paciente_cidade' => form_error('paciente_cidade'),
 				'paciente_uf' => form_error('paciente_uf'),
+				'paciente_imagem' => form_error('paciente_imagem'),
 			);
 
 			echo json_encode($retorno);
@@ -204,7 +207,8 @@ class Pacientes extends CI_Controller {
 			exit('Ação não permitida');
 		}
 
-		$paciente_id = (int) $this->input->post('paciente_id', true);
+		$paciente_id = $this->input->post('paciente_id', true);
+		$paciente_id = (int) $paciente_id;
 
 		if( ! $paciente_id) {
 			$retorno['erro'] = true;
@@ -224,8 +228,6 @@ class Pacientes extends CI_Controller {
 
 		$this->core_model->delete('pacientes_cadastro', array('paciente_id' => $paciente_id));
 
-		$retorno['erro'] = false;
-
 		if($imagem = $data->paciente_imagem) {
 			if($this->delete_image($imagem)) {
 				$retorno['erro'] = false;
@@ -235,11 +237,10 @@ class Pacientes extends CI_Controller {
 			}
 
 			echo json_encode($retorno);
-
-			die();
+		} else {
+			$retorno['erro'] = false;
+			echo json_encode($retorno);
 		}
-
-		echo json_encode($retorno);
 	}
 
 	public function upload() {
@@ -275,6 +276,9 @@ class Pacientes extends CI_Controller {
 	}
 
 	public function replace_image() {
+		$paciente_id = $this->input->post('paciente_id', true);
+		$paciente_id = (int) $paciente_id;
+
 		$foto_paciente = $this->input->post('foto_paciente', true);
 
 		$retorno = [];
@@ -285,6 +289,18 @@ class Pacientes extends CI_Controller {
 			if(file_exists($foto)) {
 				$retorno['erro'] = false;
 				unlink($foto);
+
+				/*
+					QUANDO O USUÁRIO ESTIVER EDITANDO O REGISTRO E CHAMAR A FUNÇÃO replace_image(),
+				 	DELETA O REGISTRO DE IMAGEM ATUAL PARA SUBSTITUÍ-LO OU NÃO CADASTRAR.
+				*/
+				if($paciente_id) {
+					$data = array(
+						'paciente_imagem' => "",
+					);
+
+					$this->core_model->update('pacientes_cadastro', $data,  array('paciente_id' => $paciente_id));
+				}
 
 			} else {
 				$retorno['erro'] = true;

@@ -51,6 +51,9 @@
 								<td class="text-center">{{ paciente.paciente_cpf }}</td>
 								<td class="text-center">{{ paciente.paciente_cns }}</td>
 								<td class="text-center">
+									<button @click="getPacienteId(paciente.paciente_id)" type="button" class="btn btn-info" title="Informações">
+										<i class="fas fa-eye"></i>
+									</button>
 									<button @click="getPacienteId(paciente.paciente_id)" type="button" class="btn btn-primary" title="Editar">
 										<i class="fas fa-user-edit"></i>
 									</button>
