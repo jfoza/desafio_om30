@@ -156,7 +156,7 @@
 				</div>
 
 				<div class="form-group col-md-3">
-					<label>Imagem(Máximo 300X400px)</label>
+					<label>Imagem(Máximo 400X400px)</label>
 
 					<div v-if="showImage == false">
 						<input type="file" @change="onFileSelected" id="arquivo" class="form-control"/>
@@ -345,7 +345,7 @@
 				</div>
 
 				<div class="form-group col-md-3">
-					<label>Imagem(Máximo 300X400px)</label>
+					<label>Imagem(Máximo 400X400px)</label>
 
 					<div v-if="showImage == false">
 						<input type="file" @change="onFileSelected" id="arquivo" class="form-control"/>
