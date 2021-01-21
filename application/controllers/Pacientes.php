@@ -51,7 +51,7 @@ class Pacientes extends CI_Controller {
 		$this->form_validation->set_rules('paciente_nome_completo_mae', 'Sobrenome', 'trim|required|min_length[2]|max_length[200]');
 		$this->form_validation->set_rules('paciente_data_nascimento', 'Data de nascimento', 'trim|required');
 		$this->form_validation->set_rules('paciente_cpf', 'CPF', 'trim|required|exact_length[14]|callback_valida_cpf');
-		$this->form_validation->set_rules('paciente_cns', 'CNS', 'trim|required|exact_length[15]|callback_valida_cns');
+		$this->form_validation->set_rules('paciente_cns', 'CNS', 'trim|required|min_length[15]|max_length[18]|callback_valida_cns');
 		$this->form_validation->set_rules('paciente_cep', 'CEP', 'trim|required|exact_length[9]');
 		$this->form_validation->set_rules('paciente_endereco', 'Endereço', 'trim|required|min_length[4]|max_length[200]');
 		$this->form_validation->set_rules('paciente_numero_endereco', 'Nº', 'trim|required|max_length[15]');
@@ -127,7 +127,7 @@ class Pacientes extends CI_Controller {
 		$this->form_validation->set_rules('paciente_nome_completo_mae', 'Sobrenome', 'trim|required|min_length[2]|max_length[200]');
 		$this->form_validation->set_rules('paciente_data_nascimento', 'Data de nascimento', 'trim|required');
 		$this->form_validation->set_rules('paciente_cpf', 'CPF', 'trim|required|exact_length[14]|callback_valida_cpf');
-		$this->form_validation->set_rules('paciente_cns', 'CNS', 'trim|required|exact_length[15]|callback_valida_cns');
+		$this->form_validation->set_rules('paciente_cns', 'CNS', 'trim|required|min_length[15]|max_length[18]|callback_valida_cns');
 		$this->form_validation->set_rules('paciente_cep', 'CEP', 'trim|required|exact_length[9]');
 		$this->form_validation->set_rules('paciente_endereco', 'Endereço', 'trim|required|min_length[4]|max_length[200]');
 		$this->form_validation->set_rules('paciente_numero_endereco', 'Nº', 'trim|required|max_length[15]');
@@ -228,7 +228,9 @@ class Pacientes extends CI_Controller {
 
 		$this->core_model->delete('pacientes_cadastro', array('paciente_id' => $paciente_id));
 
-		if($imagem = $data->paciente_imagem) {
+		$imagem = $data->paciente_imagem;
+
+		if($imagem && $imagem != "null") {
 			if($this->delete_image($imagem)) {
 				$retorno['erro'] = false;
 			} else {
@@ -247,8 +249,8 @@ class Pacientes extends CI_Controller {
 		$config['upload_path']         = './uploads/imagens/';
 		$config['allowed_types']       = 'jpg|png|jpeg|JPG|PNG|JPEG';
 		$config['max_size']            = 2048;
-		$config['max_width']           = 300;
-		$config['max_height']          = 300;
+		$config['max_width']           = 400;
+		$config['max_height']          = 400;
 		$config['encrypt-name']        = true;
 		$config['max_filename']        = 200;
 		$config['file_ext_tolower']    = true;

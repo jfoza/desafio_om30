@@ -1,34 +1,4 @@
-Vue.component('List', {
-	template:
-		`
-            <div class="section-body">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">        
-                            <slot></slot>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `
-});
-
-Vue.component('New', {
-	template:
-		`
-            <div class="section-body">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">        
-                            <slot></slot>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `
-});
-
-Vue.component('Edit', {
+Vue.component('Pacientes', {
 	template:
 		`
             <div class="section-body">
@@ -93,7 +63,7 @@ var vm1 = new Vue({
 		showImage: false,
 		pacientes: [],
 		responsePacientes: [],
-		choosePaciente: [],
+		choosePaciente: {},
 		chooseImage: [],
 		dados_cep: {},
 
@@ -103,6 +73,7 @@ var vm1 = new Vue({
 		pesquisaPacientes: '',
 		imageName: '',
 		iconDelete: BASE_URL +'public/assets/img/icon-delete.png',
+		iconNoImage: BASE_URL +'public/assets/img/sem-imagem.png',
 		imageUrl: BASE_URL + 'uploads/imagens/',
 		formValidate: [],
 		imageValidate: '',
@@ -110,9 +81,9 @@ var vm1 = new Vue({
 		//pagination
 		pagination: true,
 		currentPage: 0,
-		rowCountPage:8,
-		totalData:0,
-		pageRange:4,
+		rowCountPage: 8,
+		totalData: 0,
+		pageRange: 4,
 	},
 
 	created() {
@@ -130,16 +101,19 @@ var vm1 = new Vue({
 			this.listPacientes = true;
 			this.titulo = 'Todos os pacientes'
 
-			axios.get(BASE_URL + 'pacientes/list_pacientes').then(function(response){
-				let res = response.data.pacientes;
+			axios.get(BASE_URL + 'pacientes/list_pacientes')
+				.then(function(response){
+					if(response.data.erro === false) {
+						let res = response.data.pacientes;
 
-				//PERCORRE O ARRAY FORMATANDO AS DATAS DE NASCIMENTO
-				res.forEach(function(el, i){
-					el.paciente_data_nascimento = moment(el.paciente_data_nascimento).format("DD/MM/YYYY");
-				});
+						//PERCORRE O ARRAY FORMATANDO AS DATAS DE NASCIMENTO
+						res.forEach(function(el, i){
+							el.paciente_data_nascimento = moment(el.paciente_data_nascimento).format("DD/MM/YYYY");
+						});
 
-				vm1.responsePacientes = res;
-				vm1.getData(res);
+						vm1.responsePacientes = res;
+						vm1.getData(res);
+					}
 			}).catch(err => {
 				console.log(err);
 			})
@@ -224,13 +198,14 @@ var vm1 = new Vue({
 
 						if(vm1.formNewPaciente === true) {
 							this.imageName = response.data.nome;
+							this.imageValidate = '';
 							this.newPaciente.paciente_imagem = this.imageName;
 							this.showImage = true;
 						}
 					}
 
-					if(response.error === true) {
-						vm1.imageValidate = response.data.mensagem;
+					if(response.data.error === true) {
+						this.imageValidate = response.data.mensagem;
 					}
 				})
 		},
@@ -266,6 +241,7 @@ var vm1 = new Vue({
 		openModalNew() {
 			this.listPacientes = false;
 			this.formEditPaciente = false;
+			this.infoPaciente = false;
 			this.formNewPaciente = true;
 			this.titulo = 'Novo paciente'
 		},
@@ -273,21 +249,31 @@ var vm1 = new Vue({
 		openModalEdit() {
 			this.listPacientes = false;
 			this.formNewPaciente = false;
+			this.infoPaciente = false;
 			this.formEditPaciente = true;
 			this.titulo = 'Editar paciente'
+		},
+
+		openModalInfo() {
+			this.listPacientes = false;
+			this.formNewPaciente = false;
+			this.formEditPaciente = false;
+			this.infoPaciente = true;
+			this.titulo = 'Informações do paciente'
 		},
 
 		openModalDelete(paciente_id) {
 			this.listPacientes = true;
 			this.formNewPaciente = false;
 			this.formEditPaciente = false;
+			this.infoPaciente = false;
 
 			vm1.choosePaciente.paciente_id = paciente_id;
 
 			this.modalDeletePaciente = true;
 		},
 
-		getPacienteId(paciente_id) {
+		getPacienteId(paciente_id, infoOrEdit) {
 			axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 			axios.get(BASE_URL + 'pacientes/get_paciente_id', {
@@ -298,17 +284,20 @@ var vm1 = new Vue({
 				if(response.data.erro == false) {
 					const res = response.data.dados_paciente;
 
-					if(res.paciente_imagem == "" || res.paciente_imagem == null) {
-						vm1.showImage = false;
-					} else {
-						vm1.showImage = true;
-					}
+					(res.paciente_imagem == "" || res.paciente_imagem == null || res.paciente_imagem == "null")
+						? vm1.showImage = false
+						: vm1.showImage = true;
 
 					vm1.choosePaciente = res;
 				}
 			});
 
-			this.openModalEdit();
+			if(infoOrEdit === false) {
+				this.openModalInfo();
+			}
+			if(infoOrEdit === true) {
+				this.openModalEdit();
+			}
 		},
 
 		getData(response) {
@@ -344,6 +333,13 @@ var vm1 = new Vue({
 						vm1.newPaciente.paciente_uf = vm1.dados_cep.uf;
 					}
 				});
+			}
+
+			if(vm1.newPaciente.paciente_cep.length === 0) {
+				vm1.newPaciente.paciente_endereco = '';
+				vm1.newPaciente.paciente_bairro = '';
+				vm1.newPaciente.paciente_cidade = '';
+				vm1.newPaciente.paciente_uf = '';
 			}
 		},
 
@@ -381,12 +377,12 @@ var vm1 = new Vue({
 		},
 
 		formData(obj){
-			var formData = new FormData();
-			for ( var key in obj ) {
-				formData.append(key, obj[key]);
-			}
-			return formData;
-		},
+					var formData = new FormData();
+					for ( var key in obj ) {
+						formData.append(key, obj[key]);
+					}
+					return formData;
+				},
 	},
 
 	computed: {
@@ -408,12 +404,13 @@ var vm1 = new Vue({
 					paciente.paciente_cpf === this.pesquisaPacientes ||
 					paciente.paciente_cpf.replace(/[^0-9]+/g,'') === this.pesquisaPacientes ||
 					paciente.paciente_cns === this.pesquisaPacientes ||
+					paciente.paciente_cns.replace(/\s/g,'') === this.pesquisaPacientes ||
 					paciente.paciente_uf === this.pesquisaPacientes ||
 					paciente.paciente_cidade === this.pesquisaPacientes ||
 					paciente.paciente_bairro === this.pesquisaPacientes ||
 					paciente.paciente_cep === this.pesquisaPacientes ||
 					paciente.paciente_uf.toLowerCase() === this.pesquisaPacientes ||
-					paciente.paciente_cidade.toLowerCase() === this.pesquisaPacientes ||
+					paciente.paciente_cidade.toLowerCase() === this.pesquisaPacientes  ||
 					paciente.paciente_bairro.toLowerCase() === this.pesquisaPacientes ||
 					paciente.paciente_cep.replace(/[^0-9]+/g,'') === this.pesquisaPacientes
 				);

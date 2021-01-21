@@ -7,7 +7,7 @@
 
 	<section v-if="listPacientes == true" class="section">
 		<!-- LISTA TODOS OS PACIENTES -->
-		<List>
+		<Pacientes>
 			<div class="card-header d-block">
 				<div class="float-left">
 					<h4>{{ titulo }}</h4>
@@ -51,10 +51,10 @@
 								<td class="text-center">{{ paciente.paciente_cpf }}</td>
 								<td class="text-center">{{ paciente.paciente_cns }}</td>
 								<td class="text-center">
-									<button @click="getPacienteId(paciente.paciente_id)" type="button" class="btn btn-info" title="Informações">
+									<button @click="getPacienteId(paciente.paciente_id, false)" type="button" class="btn btn-info" title="Informações">
 										<i class="fas fa-eye"></i>
 									</button>
-									<button @click="getPacienteId(paciente.paciente_id)" type="button" class="btn btn-primary" title="Editar">
+									<button @click="getPacienteId(paciente.paciente_id, true)" type="button" class="btn btn-primary" title="Editar">
 										<i class="fas fa-user-edit"></i>
 									</button>
 									<button @click="openModalDelete(paciente.paciente_id)" type="button" class="btn btn-danger" title="Excluir">
@@ -70,9 +70,9 @@
 					</div>
 				</div>
 			</div>
-		</List>
+		</Pacientes>
 
-		<div v-if="pagination">
+		<div v-if="pagination == true">
 			<Pagination
 					:current_page="currentPage"
 					:row_count_page="rowCountPage"
