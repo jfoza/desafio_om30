@@ -49,7 +49,7 @@ Caso haja disparidade entre os parâmetros setados, a lib 'upload' retorna uma m
 
 Campos obrigatórios: Nome, Sobrenome, Nome completo da mãe, Data de Nascimento, CPF, CNS, CEP, Endereço, Número, Bairo, Cidade, UF;
 
-Ao cadastrar um CNS, deve-se utilizar registro que iniciem com 1 ou 2, Ex:. 160780283120006, 278631959030004;
+Ao cadastrar um CNS, deve-se utilizar registros que iniciem com 1 ou 2, Ex:. 160780283120006, 278631959030004;
 
 
 
