@@ -4,7 +4,7 @@ Sistema de cadastro de pacientes
 
 Sistema para cadastro de pacientes construído em PHP utilizando o Codeigniter framework + Vuejs;
 
-Banco de dados PostgreSQL versão 10.1;
+Banco de dados PostgreSQL versão 10.1 ou MySQL versão 5.4;
 
 ###################
 Libs utilizadas
@@ -25,16 +25,72 @@ Momentjs, utilizado para realizar a validação e formatação de datas e horas 
 ViaCep, faz a verificação do CEP inserido e completa os campos referentes ao endereço;
 
 ###################
+Configurações de banco de dados
+###################
+
+Podem ser utilizados tanto MySQL quanto PostgreSQL, seguem as configurações de cada um.
+
+Para utilizar MySQL: 
+Criar um banco de dados com nome 'pacientes',
+Executar o arquivo 'pacientes_mysql.sql' que está na raíz do projeto,
+Configurar o arquivo 'database.php' que está em 'application/config/database.php'
+
+$db['default'] = array(
+	'dsn'	=> '',
+	'hostname' => 'localhost',
+	'username' => 'your_database_username',
+	'password' => 'your_database_password',
+	'database' => 'pacientes',
+	'dbdriver' => 'mysqli',
+	'dbprefix' => '',
+	'pconnect' => FALSE,
+	'db_debug' => (ENVIRONMENT !== 'development'),
+	'cache_on' => FALSE,
+	'cachedir' => '',
+	'char_set' => 'utf8',
+	'dbcollat' => 'utf8_general_ci',
+	'swap_pre' => '',
+	'encrypt' => FALSE,
+	'compress' => FALSE,
+	'stricton' => TRUE,
+	'failover' => array(),
+	'save_queries' => TRUE
+);
+
+Para utilizar PostgreSQL: 
+Criar um banco de dados com nome 'pacientes',
+Executar o arquivo 'pacientes_postgre.sql' que está na raíz do projeto,
+Configurar o arquivo 'database.php' que está em 'application/config/database.php'
+
+$db['default'] = array(
+	'dsn'	=> '',
+	'hostname' => 'localhost',
+	'username' => 'your_database_username',
+	'password' => 'your_database_password',
+	'database' => 'pacientes',
+	'dbdriver' => 'postgre',
+	'dbprefix' => '',
+	'pconnect' => FALSE,
+	'db_debug' => (ENVIRONMENT !== 'development'),
+	'cache_on' => FALSE,
+	'cachedir' => '',
+	'char_set' => 'utf8',
+	'dbcollat' => 'utf8_general_ci',
+	'swap_pre' => '',
+	'encrypt' => FALSE,
+	'compress' => FALSE,
+	'stricton' => TRUE,
+	'failover' => array(),
+	'save_queries' => TRUE
+);
+
+###################
 Instruções para execução e utilização
 ###################
 
-A estrutura de banco de dados está em um arquivo chamado pacientes.sql na raíz do projeto;
+Após ter o banco de dados criado e configurado, executar o comando "composer install" na raíz do projeto e consequentemente possuindo o composer instalado no local de execução do projeto;
 
-Após criar o banco de dados e sua estrutura, é necessário executar o comando "composer install" na raíz do projeto e consequentemente possuir o composer instalado no local de execução do projeto;
-
-Inserir as credenciais do banco de dados em application/config/database.php;
-
-Inserir a URL base em dois arquivos: application/config/config.php, public/assets/js/util.js;
+Inserir a URL base em dois arquivos: 'application/config/config.php', 'public/assets/js/util.js';
 
 O Codeigniter está em modo 'development' para assim poderem ser exibidos os debugs;
 
@@ -50,6 +106,16 @@ Caso haja disparidade entre os parâmetros setados, a lib 'upload' retorna uma m
 Campos obrigatórios: Nome, Sobrenome, Nome completo da mãe, Data de Nascimento, CPF, CNS, CEP, Endereço, Número, Bairo, Cidade, UF;
 
 Ao cadastrar um CNS, deve-se utilizar registros que iniciem com 1 ou 2, Ex:. 160780283120006, 278631959030004;
+
+###################
+Auxílio para a realização dos cadastros
+###################
+
+Gerador de CPF válido: https://www.4devs.com.br/gerador_de_cpf,
+
+Gerador de CNS válido(utilizar apenas os que iniciam com 1 ou 2): https://geradornv.com.br/gerador-cns/,
+
+Gerador de CEP válido: https://www.4devs.com.br/gerador_de_cep
 
 
 
