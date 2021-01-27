@@ -466,6 +466,7 @@
 								   v-model="choosePaciente.paciente_cns"
 								   class="form-control"
 								   autocomplete="off"
+								   onkeyup="mascara('### #### #### ####',this,event,true)"
 								   disabled="disabled"
 							/>
 						</div>

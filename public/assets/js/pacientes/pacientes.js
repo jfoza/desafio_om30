@@ -173,9 +173,6 @@ var vm1 = new Vue({
 					vm1.msgSucesso = 'Registro excluído com sucesso.';
 					vm1.alert = true;
 				}
-				if(response.data.erro === true) {
-					vm1.formValidate = response.data.mensagem;
-				}
 			})
 		},
 

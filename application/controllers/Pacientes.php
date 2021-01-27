@@ -31,11 +31,11 @@ class Pacientes extends CI_Controller {
 
 		$data['pacientes'] = $this->core_model->get_all('pacientes_cadastro', null, 'paciente_id DESC');
 
-		if( ! $data['pacientes']) {
+		if($data['pacientes'] || $data['pacientes'] == null || $data['pacientes'] == []) {
+			$data['erro'] = false;
+		} else {
 			$data['erro'] = true;
 			$data['mensagem'] = 'Não foi possível exibir os dados';
-		} else {
-			$data['erro'] = false;
 		}
 
 		echo json_encode($data);
@@ -226,10 +226,11 @@ class Pacientes extends CI_Controller {
 
 		$data = $this->core_model->get_by_id('pacientes_cadastro', array('pacientes_cadastro.paciente_id' => $paciente_id));
 
-		$this->core_model->delete('pacientes_cadastro', array('paciente_id' => $paciente_id));
-
 		$imagem = $data->paciente_imagem;
 
+		$this->core_model->delete('pacientes_cadastro', array('paciente_id' => $paciente_id));
+
+		//DELETA O ARQUIVO DE IMAGEM NO DIRETÓRIO 'uploads/imagens'
 		if($imagem && $imagem != "null") {
 			if($this->delete_image($imagem)) {
 				$retorno['erro'] = false;
@@ -320,8 +321,6 @@ class Pacientes extends CI_Controller {
 
 	public function delete_image($imagem = null) {
 		$foto_paciente = $imagem;
-
-		$retorno = [];
 
 		if($foto_paciente) {
 			$foto = FCPATH .'uploads/imagens/'.$foto_paciente;

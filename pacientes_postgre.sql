@@ -17,14 +17,14 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
@@ -107,7 +107,6 @@ ALTER TABLE ONLY public.pacientes_cadastro ALTER COLUMN paciente_id SET DEFAULT 
 --
 
 COPY public.migrations (version) FROM stdin;
-0
 \.
 
 
@@ -116,7 +115,7 @@ COPY public.migrations (version) FROM stdin;
 --
 
 COPY public.pacientes_cadastro (paciente_id, paciente_data_cadastro, paciente_data_alteracao, paciente_nome, paciente_sobrenome, paciente_nome_completo, paciente_data_nascimento, paciente_cpf, paciente_cns, paciente_cep, paciente_endereco, paciente_numero_endereco, paciente_bairro, paciente_cidade, paciente_uf, paciente_complemento, paciente_nome_completo_mae, paciente_imagem) FROM stdin;
-1	2021-01-21 15:47:26.213738-03	2021-01-21 15:47:26.213738-03	Giuseppe	Foza	Giuseppe Foza	1995-04-19	031.681.590-00	252 7709 1493 0000	93052-170	Rua Otto Daudt	1665	Feitoria	São Leopoldo	RS		Neuza Maria Cezimbra Foza	58996235.jpg
+7	2021-01-27 14:15:40.554607-03	2021-01-27 14:15:40.554607-03	Giuseppe	Foza	Giuseppe Foza	1995-04-19	031.681.590-00	262677787940007	93052-170	Rua Otto Daudt	1665	Feitoria	São Leopoldo	RS		Neuza Maria Cezimbra Foza	589962351.jpg
 \.
 
 
@@ -124,7 +123,7 @@ COPY public.pacientes_cadastro (paciente_id, paciente_data_cadastro, paciente_da
 -- Name: pacientes_cadastro_paciente_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.pacientes_cadastro_paciente_id_seq', 6, true);
+SELECT pg_catalog.setval('public.pacientes_cadastro_paciente_id_seq', 7, true);
 
 
 --
