@@ -90,7 +90,7 @@ Instruções para execução e utilização
 
 Após ter o banco de dados criado e configurado, executar o comando "composer install" na raíz do projeto e consequentemente possuindo o composer instalado no local de execução do projeto;
 
-Inserir a URL base em dois arquivos: 'application/config/config.php', 'public/assets/js/util.js';
+Inserir a URL base em dois arquivos: 'application/config/config.php(linha 26)', 'public/assets/js/util.js';
 
 O Codeigniter está em modo 'development' para assim poderem ser exibidos os debugs;
 
